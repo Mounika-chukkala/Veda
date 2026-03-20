@@ -1,0 +1,25 @@
+version: '3.8'
+
+volumes:
+  redis_data:
+  mongo_data:
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: vedaai-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  mongodb:
+    image: mongo:6-jammy
+    container_name: vedaai-mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - mongo_data:/data/db
