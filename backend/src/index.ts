@@ -13,15 +13,30 @@ const app = express();
 const server = http.createServer(app);
 
 // Configure CORS for both Express and Socket.io
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST']
-}));
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
+
+const corsOptions = {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        // Allow requests with no origin (mobile apps, curl, Render health checks)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS blocked: ${origin}`));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 export const io = new Server(server, {
     cors: {
-        origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-        methods: ['GET', 'POST']
+        origin: allowedOrigins,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        credentials: true,
     }
 });
 
@@ -34,7 +49,7 @@ app.use('/api/assignments', assignmentRoutes);
 // Socket.io connection handle
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
-    
+
     // Clients can join a room specific to an assignment ID to get updates on it
     socket.on('join_assignment_room', (assignmentId) => {
         socket.join(assignmentId);
