@@ -493,7 +493,7 @@ export default function AssignmentPage() {
                                   strong: ({node, ...props}) => <strong className="font-bold text-[#111827]" {...props} /> 
                                 }}
                               >
-                                {paper.answerKey?.replace(/(Q\d+:)/g, '\n$1').trim()}
+                                {paper.answerKey?.trim()}
                               </ReactMarkdown>
                          </div>
                      </div>

@@ -47,7 +47,7 @@ export const generateQuestionPaper = async (
           ]
         }
       ],
-      "answerKey": "String (A comprehensive, well-formatted answer key for the entire paper, including question numbers and brief explanations for subjective answers)"
+      "answerKey": "String (A professionally structured answer key. RULES: 1. Group answers by section (e.g., '### Section A: Multiple Choice Questions'). 2. List each answer starting with its question number (e.g. '1. [Answer text]'). 3. For MCQs, include both the option letter and the option text (e.g. '1. A) [Option Text]'). 4. Use markdown for section titles.)"
     }
 `;
 
