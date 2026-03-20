@@ -15,15 +15,27 @@ const server = http.createServer(app);
 // Configure CORS for both Express and Socket.io
 const allowedOrigins = [
     process.env.FRONTEND_URL,
-].filter(Boolean) as string[];
+    'http://localhost:3000',
+    'https://veda-henna.vercel.app',
+].filter(Boolean).map(url => url!.replace(/\/$/, "")); // Remove trailing slashes
+
+console.log('Server initialized with allowed origins:', allowedOrigins);
 
 const corsOptions = {
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
         // Allow requests with no origin (mobile apps, curl, Render health checks)
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        const normalizedOrigin = origin.replace(/\/$/, "");
+        
+        if (allowedOrigins.includes(normalizedOrigin)) {
             callback(null, true);
         } else {
-            callback(new Error(`CORS blocked: ${origin}`));
+            console.error(`CORS Blocked: Origin ${origin} (Normalized: ${normalizedOrigin}) is not in allowed list:`, allowedOrigins);
+            // Return false to deny without crashing the whole request with a 500 error
+            callback(null, false);
         }
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
